@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server {
+import br.unioeste.client.Message;
+
+public class Server extends Thread {
 
 	private ServerSocket server;
 
@@ -19,12 +21,13 @@ public class Server {
 	private ObjectInputStream input;
 
 	//Roda o "Servidor"
-	public void runServer() throws IOException{
+	@Override
+	public void run(){
 
 		try{
 			//Instancia Servidor na porta 12345
 			this.server = new ServerSocket(12345, 100);
-			System.out.println("Server Estartado na porta 12345, Aguardando conexões");
+			System.out.println("Server works in port 12345. Waiting for connections");
 
 			while(true){
 				try{
@@ -45,7 +48,12 @@ public class Server {
 		}catch (Exception e) {
 			// TODO: handle exception
 		}finally{
-			server.close();
+			try {
+				server.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -64,39 +72,55 @@ public class Server {
 		output.flush();
 
 		input = new ObjectInputStream(connection.getInputStream());
+		
+		Message outmessage = new Message();
+		
+		try{
+			outmessage.setMessage("Connection Successful on Server");
+			outmessage.setDestino("SERVER To: Client");
+			sendData(outmessage);
+		}catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Message sent Fail!");
+		}
+		
 
 		System.out.println("Input OK");
 	}
 	//Processa conexão com cliente
 	private void processConnection() throws IOException{
 
-		String message = "Connection Successful on Server";
-		sendData(message);
+
 		
-		String inmessage = "";
-		
+		Message inmessage = new Message();
+		Message outmessage = new Message();
+		outmessage.setDestino("SERVER To Client");
 		do{
 			
 			try{
-				inmessage = (String) input.readObject();
-				System.out.println("Message received: " + inmessage);
+				inmessage = (Message) input.readObject();
+				System.out.println("Message received: " + inmessage.getMessage() + " Stream: " + inmessage.getDestino());
 				
-				sendData("Message received, Thank's for all");
+				outmessage.setMessage("Message received. Thank's for All!");
+				
+				sendData(outmessage);
 				
 			}catch (Exception e) {
 				// TODO: handle exception
 			}
 			
-		}while(!inmessage.equals("CLIENT>> sair"));
+		}while(!inmessage.getMessage().equals("CLIENT>> sair"));
 
-		
+		System.out.println("SERVER: finalmente uma morga");
 		
 	}
 	//Envia dados ao cliente
-	private void sendData(String message){
+	private void sendData(Message message){
 
 		try{
-			output.writeObject("SERVER>> " + message);
+			/*output.writeObject("SERVER>> " + message);
+			output.flush();*/
+			output.writeObject(message);
 			output.flush();
 
 		}catch (IOException e) {
@@ -104,7 +128,7 @@ public class Server {
 		}
 
 	}
-
+	/*Fecha conexão com cliente*/
 	private void closeConnection(){
 
 		System.out.println("##\n#### Closing connection\n");
@@ -122,13 +146,7 @@ public class Server {
 
 	public static void main(String[] args){
 		Server srv = new Server();
-		try {
-			srv.runServer();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Error: Server Don't Works ");
-		}
+		srv.run();
 	}
 	 
 
