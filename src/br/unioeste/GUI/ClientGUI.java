@@ -7,8 +7,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,16 +26,23 @@ import br.unioeste.messenger.MessagesListener;
 
 public class ClientGUI extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private JMenu serverMenu; // for connecting/disconnecting server
 	private JTextArea messageArea; // displays messages
 	private JTextArea inputArea; // inputs messages
-	private JButton connectButton; // button for connecting
+	//private JButton connectButton; // button for connecting
 	private JMenuItem connectMenuItem; // menu item for connecting
-	private JButton disconnectButton; // button for disconnecting
+	//private JButton disconnectButton; // button for disconnecting
 	private JMenuItem disconnectMenuItem; // menu item for disconnecting
 	private JButton sendButton; // sends messages
 	private JLabel statusBar; // label for connection status
 	private String userName; // userName to add to outgoing messages
+	
 	private ManageMessages messageManager; // communicates with server
 	private MessagesListener messageListener; // receives incoming messages
 
@@ -50,7 +55,6 @@ public class ClientGUI extends JFrame {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); 
 		} catch (Exception e) {
 			System.out.println("Erro ao obter variaveis de ambiente");
-			e.printStackTrace();
 		}
 
 		messageManager = manager; // set the MessageManager
@@ -64,46 +68,34 @@ public class ClientGUI extends JFrame {
 		menuBar.add( serverMenu ); // add server menu to menu bar
 		setJMenuBar( menuBar ); // add JMenuBar to application
 
-		// create ImageIcon for connect buttons
-		Icon connectIcon = new ImageIcon( 
-				getClass().getResource( "images/Connect.gif" ) );
-
 		// create connectButton and connectMenuItem
-		connectButton = new JButton( "Connect", connectIcon );
-		connectMenuItem = new JMenuItem( "Connect", connectIcon );  
+		//connectButton = new JButton( "Connect");
+		connectMenuItem = new JMenuItem( "Connect");  
 		connectMenuItem.setMnemonic( 'C' );
 
 		// create ConnectListener for connect buttons
 		ActionListener connectListener = new ConnectListener();
-		connectButton.addActionListener( connectListener );
+		//connectButton.addActionListener( connectListener );
 		connectMenuItem.addActionListener( connectListener ); 
 
-		// create ImageIcon for disconnect buttons
-		Icon disconnectIcon = new ImageIcon( 
-				getClass().getResource( "images/Disconnect.gif" ) );
 
 		// create disconnectButton and disconnectMenuItem
-		disconnectButton = new JButton( "Disconnect", disconnectIcon );
-		disconnectMenuItem = new JMenuItem( "Disconnect", disconnectIcon );      
+		//disconnectButton = new JButton( "Disconnect");
+		disconnectMenuItem = new JMenuItem( "Disconnect" );      
 		disconnectMenuItem.setMnemonic( 'D' );
 
 		// disable disconnect button and menu item
-		disconnectButton.setEnabled( false );
+		//disconnectButton.setEnabled( false );
 		disconnectMenuItem.setEnabled( false );
 
 		// create DisconnectListener for disconnect buttons
 		ActionListener disconnectListener = new DisconnectListener();
-		disconnectButton.addActionListener( disconnectListener );
+		//disconnectButton.addActionListener( disconnectListener );
 		disconnectMenuItem.addActionListener( disconnectListener );
 
 		// add connect and disconnect JMenuItems to fileMenu
 		serverMenu.add( connectMenuItem );
-		serverMenu.add( disconnectMenuItem );           
-
-		// add connect and disconnect JButtons to buttonPanel
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.add( connectButton );
-		buttonPanel.add( disconnectButton );
+		serverMenu.add( disconnectMenuItem );
 
 		messageArea = new JTextArea(); // displays messages
 		messageArea.setEditable( false ); // disable editing
@@ -121,11 +113,8 @@ public class ClientGUI extends JFrame {
 		inputArea.setLineWrap( true ); // enable line wrapping
 		inputArea.setEditable( false ); // disable editing
 
-		// create Icon for sendButton
-		Icon sendIcon = new ImageIcon( 
-				getClass().getResource( "images/Send.gif" ) );
 
-		sendButton = new JButton( "Send", sendIcon ); // create send button
+		sendButton = new JButton( "Enviar" ); // create send button
 		sendButton.setEnabled( false ); // disable send button
 		sendButton.addActionListener(
 				new ActionListener() 
@@ -148,8 +137,6 @@ public class ClientGUI extends JFrame {
 		// create JLabel for statusBar with a recessed border
 		statusBar = new JLabel( "Not Connected" );
 		statusBar.setBorder( new BevelBorder( BevelBorder.LOWERED ) );
-
-		getContentPane().add( buttonPanel, BorderLayout.NORTH ); // add button panel
 		getContentPane().add( messagePanel, BorderLayout.CENTER ); // add message panel
 		getContentPane().add( statusBar, BorderLayout.SOUTH ); // add status bar
 
@@ -181,9 +168,9 @@ public class ClientGUI extends JFrame {
 					ClientGUI.this, "Enter user name:" );
 
 			messageArea.setText( "" ); // clear messageArea
-			connectButton.setEnabled( false ); // disable connect
+			//connectButton.setEnabled( false ); // disable connect
 			connectMenuItem.setEnabled( false ); // disable connect
-			disconnectButton.setEnabled( true ); // enable disconnect
+			//disconnectButton.setEnabled( true ); // enable disconnect
 			disconnectMenuItem.setEnabled( true ); // enable disconnect
 			sendButton.setEnabled( true ); // enable send button
 			inputArea.setEditable( true ); // enable editing for input area
@@ -202,10 +189,10 @@ public class ClientGUI extends JFrame {
 			// disconnect from server and stop routing messages
 			messageManager.disconnect( messageListener );
 			sendButton.setEnabled( false ); // disable send button
-			disconnectButton.setEnabled( false ); // disable disconnect
+			//disconnectButton.setEnabled( false ); // disable disconnect
 			disconnectMenuItem.setEnabled( false ); // disable disconnect
 			inputArea.setEditable( false ); // disable editing
-			connectButton.setEnabled( true ); // enable connect
+			//connectButton.setEnabled( true ); // enable connect
 			connectMenuItem.setEnabled( true ); // enable connect
 			statusBar.setText( "Not Connected" ); // set status bar text
 		} // end method actionPerformed      

@@ -1,8 +1,9 @@
 package br.unioeste.client;
 
+import javax.swing.JFrame;
+
 import br.unioeste.GUI.ClientGUI;
 import br.unioeste.messenger.ManageMessages;
-
 
 public class Messenger {
 
@@ -19,6 +20,9 @@ public class Messenger {
 	      
 	      // create GUI for SocketMessageManager
 	      ClientGUI clientGUI = new ClientGUI( messageManager );
+	      clientGUI.setSize(500, 600);
+	      clientGUI.setLocationRelativeTo(null);
+	      clientGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	      clientGUI.setVisible( true ); // show window
 	   }
 	
