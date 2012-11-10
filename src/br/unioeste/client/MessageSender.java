@@ -11,12 +11,12 @@ public class MessageSender  implements Runnable
 	   private Socket clientSocket; // Socket over which to send message
 	   private String messageToSend; // message to send
 
-	   public MessageSender( Socket socket, String userName, String message ) 
+	   public MessageSender( Socket socket, String userName, String toUser, String message ) 
 	   {
 	      clientSocket = socket; // store Socket for client
 	      
 	      // build message to be sent
-	      messageToSend = userName + MESSAGE_SEPARATOR + message;
+	      messageToSend = userName + MESSAGE_SEPARATOR + toUser + MESSAGE_SEPARATOR + message;
 	   } // end MessageSender constructor
 	   
 	   // send message and end

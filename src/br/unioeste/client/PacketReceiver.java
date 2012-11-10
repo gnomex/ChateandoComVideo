@@ -19,9 +19,13 @@ public class PacketReceiver implements Runnable
 	   private InetAddress multicastGroup; // InetAddress of multicast group
 	   private boolean keepListening = true; // terminates PacketReceiver
 	   
-	   public PacketReceiver( MessagesListener listener ) 
+	   private String userTag;
+	   	   
+	   public PacketReceiver( MessagesListener listener , String userTag ) 
 	   {
 	      messageListener = listener; // set MessageListener
+	      
+	      this.userTag = userTag;
 	      
 	      try // connect MulticastSocket to multicast address and port 
 	      {
@@ -82,12 +86,25 @@ public class PacketReceiver implements Runnable
 
 	         // ignore messages that do not contain a user 
 	         // name and message body
-	         if ( tokenizer.countTokens() == 2 ) 
-	         {
-	            // send message to MessageListener
-	            messageListener.messageReceived( 
-	               tokenizer.nextToken(), // user name
-	               tokenizer.nextToken() ); // message body
+	         if ( tokenizer.countTokens() == 3 ){       	 
+	        	 
+	        	 String username, touser, dataMessage;
+	        	 username = tokenizer.nextToken();
+	        	 touser = tokenizer.nextToken();
+	        	 dataMessage = tokenizer.nextToken();
+	        	 
+	        	 
+	        	 if(userTag.equalsIgnoreCase(touser)){
+	 	            // send message to MessageListener
+	 	            messageListener.messageReceived( 
+	 	               username, // user name
+	 	               touser, //To user
+	 	               dataMessage ); // message body
+	        	 }else{
+	        		 System.out.println("This message is not for me. " + userTag + " says.");
+	        	 }
+	        	 
+
 	         } // end if
 	      } // end while
 

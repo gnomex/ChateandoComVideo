@@ -68,11 +68,12 @@ public class MessageReceiver  implements Runnable
 
 	            // ignore messages that do not contain a user
 	            // name and message body
-	            if ( tokenizer.countTokens() == 2 ) 
+	            if ( tokenizer.countTokens() == 3 ) 
 	            {
 	               // send message to MessageListener
 	               messageListener.messageReceived( 
 	                  tokenizer.nextToken(), // user name
+	                  tokenizer.nextToken(), //To user
 	                  tokenizer.nextToken() ); // message body
 	            } // end if
 	            else

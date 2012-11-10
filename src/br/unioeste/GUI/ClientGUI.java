@@ -21,6 +21,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 
+import br.unioeste.client.User;
 import br.unioeste.messenger.ManageMessages;
 import br.unioeste.messenger.MessagesListener;
 
@@ -30,8 +31,8 @@ public class ClientGUI extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	
+
+
 	private JMenu serverMenu; // for connecting/disconnecting server
 	private JTextArea messageArea; // displays messages
 	private JTextArea inputArea; // inputs messages
@@ -42,15 +43,16 @@ public class ClientGUI extends JFrame {
 	private JButton sendButton; // sends messages
 	private JLabel statusBar; // label for connection status
 	private String userName; // userName to add to outgoing messages
+	private String userTag;
 	
 	private ManageMessages messageManager; // communicates with server
 	private MessagesListener messageListener; // receives incoming messages
 
 	// ClientGUI constructor
-	public ClientGUI( ManageMessages manager ) 
+	public ClientGUI( ManageMessages manager , String tag) 
 	{       
 		super( "Socket Chat" );
-		
+
 		try {	/**Pegar variaveis de ambiente*/
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); 
 		} catch (Exception e) {
@@ -59,6 +61,8 @@ public class ClientGUI extends JFrame {
 
 		messageManager = manager; // set the MessageManager
 
+		userTag = tag;
+		
 		// create MyMessageListener for receiving messages
 		messageListener = new MyMessageListener(); 
 
@@ -114,7 +118,7 @@ public class ClientGUI extends JFrame {
 		inputArea.setEditable( false ); // disable editing
 
 
-		sendButton = new JButton( "Enviar" ); // create send button
+		sendButton = new JButton( "Send" ); // create send button
 		sendButton.setEnabled( false ); // disable send button
 		sendButton.addActionListener(
 				new ActionListener() 
@@ -122,9 +126,14 @@ public class ClientGUI extends JFrame {
 					// send new message when user activates sendButton
 					public void actionPerformed( ActionEvent event )
 					{
-						messageManager.sendMessage( userName, 
+						if(userTag.isEmpty()){
+							userTag = "all";
+						}
+						
+						messageManager.sendMessage( userName, userTag, 
 								inputArea.getText() ); // send message
 						inputArea.setText( "" ); // clear inputArea
+
 					} // end method actionPerformed
 				} // end anonymous inner class
 				); // end call to addActionListener
@@ -148,7 +157,7 @@ public class ClientGUI extends JFrame {
 					public void windowClosing ( WindowEvent event ) 
 					{
 						messageManager.disconnect( messageListener );
-						System.exit( 0 );
+						//System.exit( 0 );
 					} // end method windowClosing
 				} // end anonymous inner class
 				); // end call to addWindowListener
@@ -160,13 +169,18 @@ public class ClientGUI extends JFrame {
 		// connect to server and enable/disable GUI components
 		public void actionPerformed( ActionEvent event )
 		{
-			// connect to server and route messages to messageListener
-			messageManager.connect( messageListener ); 
 
 			// prompt for userName
 			userName = JOptionPane.showInputDialog( 
 					ClientGUI.this, "Enter user name:" );
+			
+			User user = new User();
+			user.setUserName(userName);;
+			user.setUserTag(userName);
 
+			// connect to server and route messages to messageListener
+			messageManager.connect(messageListener, user);
+			
 			messageArea.setText( "" ); // clear messageArea
 			//connectButton.setEnabled( false ); // disable connect
 			connectMenuItem.setEnabled( false ); // disable connect
@@ -176,6 +190,7 @@ public class ClientGUI extends JFrame {
 			inputArea.setEditable( true ); // enable editing for input area
 			inputArea.requestFocus(); // set focus to input area
 			statusBar.setText( "Connected: " + userName ); // set text
+
 		} // end method actionPerformed      
 	} // end ConnectListener inner class
 
@@ -203,11 +218,11 @@ public class ClientGUI extends JFrame {
 	private class MyMessageListener implements MessagesListener 
 	{
 		// when received, display new messages in messageArea
-		public void messageReceived( String from, String message ) 
+		public void messageReceived( String from,String to, String message ) 
 		{
 			// append message using MessageDisplayer
 			SwingUtilities.invokeLater( 
-					new MessageDisplayer( from, message ) );
+					new MessageDisplayer( from, to, message ) );
 		} // end method messageReceived
 	} // end MyMessageListener inner class
 
@@ -217,11 +232,13 @@ public class ClientGUI extends JFrame {
 	{
 		private String fromUser; // user from which message came
 		private String messageBody; // body of message
+		private String toUser; //user to send
 
 		// MessageDisplayer constructor
-		public MessageDisplayer( String from, String body )
+		public MessageDisplayer( String from, String to, String body )
 		{
 			fromUser = from; // store originating user
+			toUser = to;
 			messageBody = body; // store message body
 		} // end MessageDisplayer constructor
 
@@ -229,7 +246,7 @@ public class ClientGUI extends JFrame {
 		public void run() 
 		{
 			// append new message
-			messageArea.append( "\n" + fromUser + "> " + messageBody );   
+			messageArea.append( "\n" + fromUser + "> <To "+toUser + ">: " + messageBody );   
 		} // end method run      
 	} // end MessageDisplayer inner class
 }

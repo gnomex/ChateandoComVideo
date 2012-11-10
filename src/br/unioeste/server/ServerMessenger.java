@@ -34,13 +34,14 @@ public class ServerMessenger  implements MessagesListener{
 				// accept new client connection
 				Socket clientSocket = serverSocket.accept();
 
+
 				// create MessageReceiver for receiving messages from client
 				serverExecutor.execute( 
 						new MessageReceiver( this, clientSocket ) );
 
 				// print connection information
 				System.out.println( "Connection received from: " +
-						clientSocket.getInetAddress() );
+						clientSocket.getInetAddress() +" Port: " +clientSocket.getPort() );
 			} // end while     
 		} // end try
 		catch ( IOException ioException )
@@ -48,15 +49,17 @@ public class ServerMessenger  implements MessagesListener{
 			ioException.printStackTrace();
 		} // end catch
 	} // end method startServer
-
+	
 	// when new message is received, broadcast message to clients
-	public void messageReceived( String from, String message ) 
+	@Override
+	public void messageReceived( String from, String to, String message ) 
 	{          
 		// create String containing entire message
-		String completeMessage = from + MESSAGE_SEPARATOR + message;
+		String completeMessage = from + MESSAGE_SEPARATOR + to + MESSAGE_SEPARATOR + message;
 
 		// create and start MulticastSender to broadcast messages
 		serverExecutor.execute( 
 				new MulticastSender( completeMessage.getBytes() ) );
 	} // end method messageReceived
+
 } // end class DeitelMessengerServer
