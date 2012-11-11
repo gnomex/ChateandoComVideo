@@ -5,7 +5,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import br.unioeste.messenger.MessagesListener;
 import static br.unioeste.global.SocketConstants.*;
 
 public class MulticastSender implements Runnable

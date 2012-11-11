@@ -14,27 +14,28 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import br.unioeste.client.SocketClientsManage;
 import br.unioeste.client.SocketMessageManager;
 import br.unioeste.client.User;
 import br.unioeste.messenger.ClientListener;
+import br.unioeste.messenger.ClientsList;
+import br.unioeste.messenger.ManageClients;
 import br.unioeste.messenger.ManageMessages;
 import br.unioeste.messenger.MessagesListener;
 
-import javax.swing.border.LineBorder;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JMenuBar;
+
+import static br.unioeste.global.SocketConstants.*;
 
 public class MessengerClientsGUI extends JFrame {
 
@@ -47,8 +48,17 @@ public class MessengerClientsGUI extends JFrame {
 
 	private DefaultListModel<String> model;
 
-	private ManageMessages messageManager; // communicates with server
-	private ClientListener clientListener; //Listener to update clients list
+	private ManageMessages messageManager; // communicates with message server
+	private ManageClients clientsManager; // communication with clients server
+
+	private ClientListener clientsListener; //
+	private MessagesListener messageListener;
+	
+	private User user;
+	
+	private JMenuItem connectMenuItem;
+	private JMenuItem disconetMenuItem;
+	private JMenuItem refreshMenuItem;
 
 	/**
 	 * Launch the application.
@@ -59,10 +69,14 @@ public class MessengerClientsGUI extends JFrame {
 				try {
 
 					ManageMessages messageManager; // declare MessageManager
-					messageManager = new SocketMessageManager( "localhost" );
+					messageManager = new SocketMessageManager( SERVER_ADDRESS );
 
-					MessengerClientsGUI frame = new MessengerClientsGUI(messageManager);
+					ManageClients clientsManager;
+					clientsManager = new SocketClientsManage();
+
+					MessengerClientsGUI frame = new MessengerClientsGUI(messageManager , clientsManager);
 					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -73,7 +87,7 @@ public class MessengerClientsGUI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MessengerClientsGUI( ManageMessages managemessages) {
+	public MessengerClientsGUI( ManageMessages managemessages , ManageClients clientsmanager) {
 
 		try {	/**Pegar variaveis de ambiente*/
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); 
@@ -83,14 +97,10 @@ public class MessengerClientsGUI extends JFrame {
 
 
 		messageManager = managemessages;
-
-		try{
-
-			clientListener = new MyClientListener(); 
-		}catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
+		clientsManager = clientsmanager;
+		
+		clientsListener = new MyClientListener();
+		messageListener = new MyMessageListener();
 
 		setTitle("Clients List");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,29 +108,36 @@ public class MessengerClientsGUI extends JFrame {
 
 		JMenu serverMenu = new JMenu ( "Server" );
 		JMenu serverChat = new JMenu ( "Chat" );
-		
-		
+
+
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		menuBar.add( serverMenu ); // add server menu to menu bar
 		menuBar.add(serverChat);
 		setJMenuBar( menuBar ); // add JMenuBar to application
 
-		JMenuItem connectMenuItem = new JMenuItem( "Connect");
-		JMenuItem disconetMenuItem = new JMenuItem("Disconect");
-		JMenuItem RefreshMenuItem = new JMenuItem("Refresh");
-		RefreshMenuItem.addActionListener(new ActionListener() {
+		ConnectListener connectionListener = new ConnectListener();
+		
+		connectMenuItem = new JMenuItem( "Connect");
+		connectMenuItem.addActionListener(connectionListener);
+		
+		disconetMenuItem = new JMenuItem("Disconect");
+		
+		refreshMenuItem = new JMenuItem("Refresh");
+		refreshMenuItem.setEnabled(false);
+		refreshMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				messageManager.listClientsConnecteds(clientListener);
+				clientsManager.getClientsList(clientsListener);
 			}
 		});
+		
 
 		JMenuItem ChatMenuItem = new JMenuItem("Chat em grupo");
 		ChatMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				//Create a new ManageMessage	
-				
+
 				// create GUI for SocketMessageManager
 				ClientGUI clientGUI = new ClientGUI( messageManager , "all" );
 				clientGUI.setSize(500, 600);
@@ -128,19 +145,17 @@ public class MessengerClientsGUI extends JFrame {
 				clientGUI.setLocationRelativeTo(null);
 				clientGUI.setVisible( true ); // show window
 
-				
+
 			}
 		});
-		
+
 		serverMenu.add(connectMenuItem);
 		serverMenu.add(disconetMenuItem);
-		serverMenu.add(RefreshMenuItem);
-		disconetMenuItem.setEnabled(false);
+		serverMenu.add(refreshMenuItem);
 		
-		serverChat.add(ChatMenuItem);
+		disconetMenuItem.setEnabled(false);
 
-		//ActionListener connectMenu = new ConnectListener();
-		//connectMenuItem.addActionListener(connectMenu);
+		serverChat.add(ChatMenuItem);
 
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
@@ -200,7 +215,19 @@ public class MessengerClientsGUI extends JFrame {
 
 		list.addMouseListener(novaConversa);
 
-		model.addElement("Teste");
+	}
+
+	private class MyClientListener implements ClientListener{
+
+		public void clientreceived(User client) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void clientListReceiver(ClientsList clientList) {
+			SwingUtilities.invokeLater(new ClientsListUpdate(clientList.getClients()));
+
+		}
 
 	}
 
@@ -238,15 +265,41 @@ public class MessengerClientsGUI extends JFrame {
 
 	}
 
-	private class MyClientListener implements ClientListener{
+	private class ConnectListener implements ActionListener 
+	{
+		// connect to server and enable/disable GUI components
+		public void actionPerformed( ActionEvent event )
+		{
 
-		@Override
-		public void clientList(ArrayList<User> users) {
-			SwingUtilities.invokeLater(new ClientsListUpdate(users));
-		}
+			// prompt for userName
+			String userName = JOptionPane.showInputDialog( 
+					MessengerClientsGUI.this, "Enter user name:" );
+			
+			user = new User();
+			user.setUserName(userName);;
+			user.setUserTag(userName);
 
+			// connect to server and route messages to messageListener
+			messageManager.connect(messageListener, user);
+
+			clientsManager.addClient(user);
+			clientsManager.getClientsList(clientsListener);
+			
+			connectMenuItem.setEnabled(false);
+			disconetMenuItem.setEnabled(true);
+			refreshMenuItem.setEnabled(true);
+			
+		} // end method actionPerformed      
+	} // end ConnectListener inner class
+	
+	private class MyMessageListener implements MessagesListener 
+	{
+		public void messageReceived( String from,String to, String message ) 
+		{
+
+		} 
 	}
-
+	
 	private class NovaConversa implements MouseListener{
 
 		@Override

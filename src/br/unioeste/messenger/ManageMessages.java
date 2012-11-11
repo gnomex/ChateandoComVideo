@@ -13,9 +13,6 @@ public interface ManageMessages {
 	public void disconnect( MessagesListener listener );
 
 	// send message to message server
-	public void sendMessage( String from, String to, String message );
-	
-	public void listClientsConnecteds( ClientListener clientListener);
-		
+	public void sendMessage( String from, String to, String message );		
 	
 }

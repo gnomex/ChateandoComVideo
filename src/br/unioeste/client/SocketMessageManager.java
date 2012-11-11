@@ -3,13 +3,11 @@ package br.unioeste.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import br.unioeste.messenger.ClientListener;
 import br.unioeste.messenger.ManageMessages;
 import br.unioeste.messenger.MessagesListener;
 import static br.unioeste.global.SocketConstants.*;
@@ -21,16 +19,13 @@ public class SocketMessageManager implements ManageMessages{
 	   private PacketReceiver receiver; // receives multicast message
 	   private boolean connected = false; // connection status
 	   private ExecutorService serverExecutor; // executor for server
-	   
-	   private ArrayList<User> usersConnecteds;
-	   
+	   	   
 	   
 	   public SocketMessageManager( String address )
 	   {
 	      serverAddress = address; // store server address
 	      serverExecutor = Executors.newCachedThreadPool();
 	      
-	      usersConnecteds = new ArrayList<User>();
 	   } // end SocketMessageManager constructor
 	   
 	   // connect to server and send messages to given MessageListener
@@ -44,14 +39,6 @@ public class SocketMessageManager implements ManageMessages{
 	      {
 	         clientSocket = new Socket( 
 	            InetAddress.getByName( serverAddress ), SERVER_PORT );
-	         
-	         //Enviar Usuario para mantedor de usuarios
-	         
-	         System.out.println("Socket works on " + clientSocket.getPort());
-	         System.out.println("Adding user "+user.getUserName()+" on list ");
-	         usersConnecteds.add(user);
-	         
-	         System.out.println("Add ?" + usersConnecteds.size());
 	         
 	         // create Runnable for receiving incoming messages
 	         receiver = new PacketReceiver( listener , user.getUserTag() );
@@ -107,20 +94,6 @@ public class SocketMessageManager implements ManageMessages{
 	      serverExecutor.execute( 
 	         new MessageSender( clientSocket, from,to , message) );
 	   } // end method sendMessage
-
-	public void listClientsConnecteds( ClientListener clientListener) {
-		
-		//clientListener.clientList(usersConnecteds);
-		try{
-			
-			clientListener.clientList(usersConnecteds);
-			
-		}catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-	}
-
 	
 
 	} 

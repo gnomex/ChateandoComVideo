@@ -1,11 +1,13 @@
 package br.unioeste.messenger;
 
-import java.util.ArrayList;
-
 import br.unioeste.client.User;
 
 public interface ClientListener {
 	
-	public void clientList(ArrayList<User> users);
+	//New client received
+	public void clientreceived( User user);
+	
+	public void clientListReceiver( ClientsList clientList);
+	
 
 }
