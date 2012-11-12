@@ -75,12 +75,30 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 	{          
 		// create String containing entire message
 		String completeMessage = from + MESSAGE_SEPARATOR + to + MESSAGE_SEPARATOR + message;
-
+		if(message.equals(DISCONNECT_STRING)){
+			removeUser(from);
+		}
 		// create and start MulticastSender to broadcast messages
 		serverExecutor.execute( 
 				new MulticastSender( completeMessage.getBytes() ) );
 	} // end method messageReceived
 
+	public void removeUser(String name){
+		try{
+			
+			for(User olduser : clientsConnecteds.getClients()){
+				if(olduser.getUserName().equals(name)){
+					clientsConnecteds.getClients().remove(olduser);
+					System.out.println("Client: " + name + "  " + DISCONNECT_STRING);
+					break;
+				}
+			}
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void clientListReceiver(ClientsList clientList) {
