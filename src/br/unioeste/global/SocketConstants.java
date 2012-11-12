@@ -1,6 +1,10 @@
 package br.unioeste.global;
 
 public class SocketConstants {
+	
+	public static final String VIDEO_STREAMING_ADDRESS = "224.0.0.23";
+	public static final int VIDEO_STREAMING_RECEIVE_PORT = 60001;
+	public static final int VIDEO_STREAMING_SEND_PORT = 60000;
 
 	// address for multicast datagrams
 	public static final String MULTICAST_ADDRESS = "224.0.0.3";
@@ -30,6 +34,8 @@ public class SocketConstants {
 
 	// String that separates the user name from the message body
 	public static final String MESSAGE_SEPARATOR = ">>";
+	
+	public static final String NO_FILES_FOUND = "NoFilesFound";
 
 	// message size (in bytes)
 	public static final int MESSAGE_SIZE = 512;
@@ -50,7 +56,7 @@ public class SocketConstants {
 	public static final int MAX_FAULT = 15;
 	public static final String GROUP = "234.5.6.7";
 	public static final String SOLICITATION_NAME = "Solicitation";
-	public static final String MANAGER_ADDR = "localhost";
+	public static String MANAGER_ADDR = "localhost";
 	public static final String REPOSITORY_PATH = "download/";
 	
 
