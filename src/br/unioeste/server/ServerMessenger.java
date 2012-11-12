@@ -1,6 +1,7 @@
 package br.unioeste.server;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -12,6 +13,8 @@ import br.unioeste.messenger.ClientsList;
 import br.unioeste.messenger.MessagesListener;
 import br.unioeste.server.client.ClientListSender;
 import br.unioeste.server.client.ClientReceiver;
+import br.unioeste.server.file.Manager;
+import br.unioeste.server.file.ServerTransmission;
 import br.unioeste.server.messages.MessageReceiver;
 import br.unioeste.server.messages.MulticastSender;
 import static br.unioeste.global.SocketConstants.*;
@@ -21,6 +24,8 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 	private ExecutorService serverExecutor; // executor for server
 	
 	private ExecutorService serverClientExecutor;
+	
+	private ExecutorService serverFileServer;
 
 	private ClientsList clientsConnecteds = new ClientsList();
 	
@@ -32,15 +37,32 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 		
 		serverClientExecutor = Executors.newCachedThreadPool();
 		
+		serverFileServer = Executors.newCachedThreadPool();
+		
+		
+		//Start de server file
+		serverFileServer.execute(new ServerTransmission());
+		serverFileServer.execute(new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    new Manager();
+                } catch (Exception ex) {
+                    
+                }
+            }
+        }));
+	
 
 		try // create server and manage new clients
 		{
 			// create ServerSocket for incoming connections
-			ServerSocket serverSocket = 
-					new ServerSocket( SERVER_PORT, 100 );
+			ServerSocket serverSocket = new ServerSocket( SERVER_PORT, 100 );
+			
+			InetAddress inet = serverSocket.getInetAddress();
 
-			System.out.printf( "%s%d%s", "Server listening on port ", 
-					SERVER_PORT, " ..." );
+			System.out.println( "Server Messenger listening on: " + inet.getHostName()+ " : " + SERVER_PORT);
 
 			// listen for clients constantly
 			while ( true ) 

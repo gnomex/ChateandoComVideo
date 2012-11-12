@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 import br.unioeste.common.Solicitation;
 import br.unioeste.server.file.transmission.UDPComunication;
 
-
 public class DiscoveryHandler implements Runnable {
 
 	Solicitation solicitation;

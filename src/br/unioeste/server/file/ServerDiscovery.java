@@ -1,7 +1,6 @@
-package br.unioeste.server;
+package br.unioeste.server.file;
 
 import java.io.IOException;
-
 import br.unioeste.common.handler.DiscoveryHandler;
 import br.unioeste.server.file.transmission.UDPComunication;
 

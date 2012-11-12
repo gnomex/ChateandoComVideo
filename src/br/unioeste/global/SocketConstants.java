@@ -30,6 +30,8 @@ public class SocketConstants {
 
 	// String that separates the user name from the message body
 	public static final String MESSAGE_SEPARATOR = ">>";
+	
+	public static final String NO_FILES_FOUND = "NoFilesFound";
 
 	// message size (in bytes)
 	public static final int MESSAGE_SIZE = 512;
@@ -50,7 +52,7 @@ public class SocketConstants {
 	public static final int MAX_FAULT = 15;
 	public static final String GROUP = "234.5.6.7";
 	public static final String SOLICITATION_NAME = "Solicitation";
-	public static final String MANAGER_ADDR = "localhost";
+	public static String MANAGER_ADDR = "localhost";
 	public static final String REPOSITORY_PATH = "download/";
 	
 

@@ -14,3 +14,6 @@ ChateandoComVideo
 # Resources used
 	Sockets
 	Swing
+
+# Dependencies
+	OpenCv

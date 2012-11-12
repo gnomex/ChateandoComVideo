@@ -1,7 +1,6 @@
-package br.unioeste.server;
+package br.unioeste.server.file;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import br.unioeste.server.file.transmission.UDPComunication;
 import br.unioeste.util.TemporaryFileList;
@@ -11,15 +10,10 @@ import static br.unioeste.global.SocketConstants.*;
 /**
  * Classe que gerencia a thread de servidor do repositorio
  */
-public class Server implements Runnable {
+public class ServerTransmission implements Runnable {
 
 	public static TemporaryFileList tmpFileList = new TemporaryFileList();
 	private boolean finish = false;
-	private ArrayList<Listener> listeners = new ArrayList<Listener>();
-
-	public void addEventListener(Listener l) {
-		listeners.add(l);
-	}
 	
 	/**
 	 * Metodo que executa as funcoes da thread
@@ -28,13 +22,16 @@ public class Server implements Runnable {
 		// Cria canal de comunicação
 		UDPComunication comunicationUDP = new UDPComunication();
 		Object object;
+		
+		System.out.println("Server Transmission works in: " + GROUP +" : "+ UDP_PORT);
+		
 		while (!finish) {
 			try {
 				// Fica ouvindo o grupo
 				object = comunicationUDP.readGroupObject(GROUP,
 						UDP_PORT);
 				// Cria uma nova thread assim que chega um objeto no grupo
-				new Thread(new MessageReceivedHandler(object, listeners.get(0)), "RECEPTORREP")
+				new Thread(new MessageReceivedHandler(object), "RECEPTORREP")
 						.start();
 
 			} catch (IOException e) {
@@ -56,10 +53,10 @@ public class Server implements Runnable {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//Server server = new Server();
+		ServerTransmission server = new ServerTransmission();
 		System.out
 				.println("Iniciando modulo de Repositorios (REPOSITORY)          [OK]");
 		
-		//server.run();
+		server.run();
 	}
 }

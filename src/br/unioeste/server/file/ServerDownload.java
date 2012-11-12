@@ -1,30 +1,30 @@
-package br.unioeste.server;
+package br.unioeste.server.file;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import br.unioeste.common.handler.UploadHandler;
+
+import br.unioeste.common.handler.DownloadHandler;
 import br.unioeste.server.file.transmission.TCPComunication;
 
 import static br.unioeste.global.SocketConstants.*;
-
 /**
- * Classe que implementa o servidor de Upload
+ * Classe que implementa o servidor de Download
  */
-public class ServerUpload extends Thread {
+public class ServerDownload extends Thread {
 
 	private Socket clientSocket;
 	private ServerSocket serverSocket;
 	private boolean finish = false;
-	private TCPComunication socketCommunication;
+	private TCPComunication comunicationTCP;
 
 	/**
 	 * Construtor da classe
 	 * 
 	 * @param threadName
 	 */
-	public ServerUpload(String threadName) {
+	public ServerDownload(String threadName) {
 		super(threadName);
 	}
 
@@ -35,15 +35,14 @@ public class ServerUpload extends Thread {
 	public void run() {
 		try {
 			// Cria canal de comunicação
-			this.serverSocket = new ServerSocket(TCP_PORT);
+			this.serverSocket = new ServerSocket(DOWNLOAD_PORT);
 
 			// Aguarda nova conexão
 			while (!finish) {
 				this.clientSocket = this.serverSocket.accept();
-				this.socketCommunication = new TCPComunication(
-						this.clientSocket);
-				new Thread(new UploadHandler(this.socketCommunication),
-						"upload").start();
+				this.comunicationTCP = new TCPComunication(this.clientSocket);
+				new Thread(new DownloadHandler(this.comunicationTCP),
+						"download").start();
 			}
 
 			// Fecha canal de comunicação
