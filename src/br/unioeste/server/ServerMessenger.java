@@ -21,20 +21,28 @@ import static br.unioeste.global.SocketConstants.*;
 
 public class ServerMessenger  implements MessagesListener, ClientListener{
 
+	private ServerSocket serverSocket;
+	
 	private ExecutorService serverExecutor; // executor for server
 	
 	private ExecutorService serverClientExecutor;
 	
 	private ExecutorService serverFileServer;
+	
+	private ServicesListener serviceListener;
 
 	private ClientsList clientsConnecteds = new ClientsList();
+	
+	public ServerMessenger(ServicesListener serviceListener){
+		this.serviceListener = serviceListener;
+	}
 	
 	// start chat server
 	public void startServer() 
 	{
 		// create executor for server runnables
 		serverExecutor = Executors.newCachedThreadPool();
-		
+	
 		serverClientExecutor = Executors.newCachedThreadPool();
 		
 		serverFileServer = Executors.newCachedThreadPool();
@@ -58,11 +66,11 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 		try // create server and manage new clients
 		{
 			// create ServerSocket for incoming connections
-			ServerSocket serverSocket = new ServerSocket( SERVER_PORT, 100 );
+			serverSocket = new ServerSocket( SERVER_PORT, 100 );
 			
 			InetAddress inet = serverSocket.getInetAddress();
 
-			System.out.println( "Server Messenger listening on: " + inet.getHostName()+ " : " + SERVER_PORT);
+			serviceListener.registerLog( "Server Messenger listening on: " + inet.getHostName()+ " : " + SERVER_PORT);
 
 			// listen for clients constantly
 			while ( true ) 
@@ -75,14 +83,13 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 				
 				// create MessageReceiver for receiving messages from client
 				serverExecutor.execute( 
-						new MessageReceiver( this, clientSocket ) );
+						new MessageReceiver( this, clientSocket , serviceListener ) );
 
 				// print connection information
-				System.out.println( "Connection received from: " +
-						clientSocket.getInetAddress() +" Port: " +clientSocket.getPort() );
+				serviceListener.registerLog("Connection received from: " +
+						clientSocket.getInetAddress() +" Port: " +clientSocket.getPort());
 			
-				
-				
+	
 			} // end while     
 		} // end try
 		catch ( IOException ioException )
@@ -90,6 +97,21 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 			ioException.printStackTrace();
 		} // end catch
 	} // end method startServer
+	
+	public void STOPSERVER(){
+		
+		try{
+			serverExecutor.shutdown();
+			serverClientExecutor.shutdown();
+			serverFileServer.shutdown();
+			
+			serverSocket.close();
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+	}
 	
 	// when new message is received, broadcast message to clients
 	@Override
@@ -102,7 +124,7 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 		}
 		// create and start MulticastSender to broadcast messages
 		serverExecutor.execute( 
-				new MulticastSender( completeMessage.getBytes() ) );
+				new MulticastSender( completeMessage.getBytes() , serviceListener) );
 	} // end method messageReceived
 
 	public void removeUser(String name){
@@ -111,7 +133,8 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 			for(User olduser : clientsConnecteds.getClients()){
 				if(olduser.getUserName().equals(name)){
 					clientsConnecteds.getClients().remove(olduser);
-					System.out.println("Client: " + name + "  " + DISCONNECT_STRING);
+					serviceListener.registerLog("Client: " + name + "  " + DISCONNECT_STRING);
+					serviceListener.clientsCounter(clientsConnecteds.getClients().size());
 					break;
 				}
 			}
@@ -133,11 +156,11 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 		
 		try{
 			
-			System.out.println("New client: " + user.getUserName());
+			serviceListener.registerLog("New client: " + user.getUserName());
 			
 			clientsConnecteds.addClient(user);
 			
-			System.out.println("  Quantidade de clientes conectados: " + clientsConnecteds.getClients().size());
+			serviceListener.clientsCounter(clientsConnecteds.getClients().size());
 			
 			serverClientExecutor.execute(new ClientListSender(clientsConnecteds));
 			
@@ -148,4 +171,4 @@ public class ServerMessenger  implements MessagesListener, ClientListener{
 	}
 
 
-} // end class DeitelMessengerServer
+}

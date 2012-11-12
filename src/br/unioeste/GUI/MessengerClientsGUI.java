@@ -471,10 +471,13 @@ public class MessengerClientsGUI extends JFrame {
 
 				// connect to server and route messages to messageListener
 				messageManager.connect(messageListener, user);
+			
 				clientsManager.addClient(user);
 				clientsManager.getClientsList(clientsListener);
+				
 			}catch (Exception e) {
 				// TODO: handle exception
+				e.printStackTrace();
 			}
 
 			connectMenuItem.setEnabled(false);
