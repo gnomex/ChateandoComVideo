@@ -1,4 +1,4 @@
-package br.unioeste.client;
+package br.unioeste.common;
 
 import java.io.Serializable;
 

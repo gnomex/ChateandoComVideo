@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import br.unioeste.client.SocketMessageManager;
-import br.unioeste.client.User;
+import br.unioeste.common.User;
 import br.unioeste.messenger.ManageMessages;
 import br.unioeste.messenger.MessagesListener;
 import static br.unioeste.global.SocketConstants.*;

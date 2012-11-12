@@ -8,6 +8,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import br.unioeste.client.message.MessageSender;
+import br.unioeste.client.message.PacketReceiver;
+import br.unioeste.common.User;
 import br.unioeste.messenger.ManageMessages;
 import br.unioeste.messenger.MessagesListener;
 import static br.unioeste.global.SocketConstants.*;

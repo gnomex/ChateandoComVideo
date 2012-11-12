@@ -1,4 +1,4 @@
-package br.unioeste.client;
+package br.unioeste.client.message;
 
 import java.io.IOException;
 import java.net.Socket;

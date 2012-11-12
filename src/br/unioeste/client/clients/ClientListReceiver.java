@@ -1,4 +1,4 @@
-package br.unioeste.client;
+package br.unioeste.client.clients;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;

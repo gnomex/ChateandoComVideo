@@ -3,7 +3,7 @@ package br.unioeste.messenger;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import br.unioeste.client.User;
+import br.unioeste.common.User;
 
 public class ClientsList implements Serializable{
 

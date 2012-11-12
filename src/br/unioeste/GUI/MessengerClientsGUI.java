@@ -26,7 +26,7 @@ import javax.swing.UIManager;
 
 import br.unioeste.client.SocketClientsManage;
 import br.unioeste.client.SocketMessageManager;
-import br.unioeste.client.User;
+import br.unioeste.common.User;
 import br.unioeste.messenger.ClientListener;
 import br.unioeste.messenger.ClientsList;
 import br.unioeste.messenger.ManageClients;
@@ -347,6 +347,8 @@ public class MessengerClientsGUI extends JFrame {
 			disconetMenuItem.setEnabled(true);
 			refreshMenuItem.setEnabled(true);
 			ChatMenuItem.setEnabled(true);
+			
+			statusBar_2.setText(" Connected with " + user.getUserName());
 
 		} // end method actionPerformed      
 	}

@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import br.unioeste.client.User;
+import br.unioeste.common.User;
 import br.unioeste.messenger.ClientListener;
 import br.unioeste.messenger.ClientsList;
 import br.unioeste.messenger.MessagesListener;

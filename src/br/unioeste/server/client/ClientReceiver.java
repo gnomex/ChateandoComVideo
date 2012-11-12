@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import br.unioeste.client.User;
+import br.unioeste.common.User;
 import br.unioeste.messenger.ClientListener;
 import static br.unioeste.global.SocketConstants.*;
 

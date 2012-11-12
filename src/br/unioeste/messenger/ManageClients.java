@@ -1,6 +1,6 @@
 package br.unioeste.messenger;
 
-import br.unioeste.client.User;
+import br.unioeste.common.User;
 
 public interface ManageClients {
 

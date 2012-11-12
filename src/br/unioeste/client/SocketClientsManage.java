@@ -3,6 +3,9 @@ package br.unioeste.client;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import br.unioeste.client.clients.ClientListReceiver;
+import br.unioeste.client.clients.ClientSender;
+import br.unioeste.common.User;
 import br.unioeste.messenger.ClientListener;
 import br.unioeste.messenger.ManageClients;
 

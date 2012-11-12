@@ -35,5 +35,23 @@ public class SocketConstants {
 	public static final int MESSAGE_SIZE = 512;
 	//Data size (in bytes) For serealized Objects
 	public static final int DATA_SIZE = 65508;
+	
+	public static final int MAX_DATA_READ = 8000;
+	public static final int BUFFER_SIZE = 7000;
+	public static final int NAME_MAX_SIZE = 500;
+	public static final int TCP_PORT = 4000;
+	public static final int UDP_PORT = 2000;
+	public static final int DELAY = 100;
+	public static final int UPLOAD_PORT = 9500;
+	public static final int DOWNLOAD_PORT = 9505;
+	public static final int DOWNLOAD_RECEIVE_PORT = 9510;
+	public static final int DISCOVERY_PORT = 9555;
+	public static final int DISCOVERY_REPLY_PORT = 9556;
+	public static final int MAX_FAULT = 15;
+	public static final String GROUP = "234.5.6.7";
+	public static final String SOLICITATION_NAME = "Solicitation";
+	public static final String MANAGER_ADDR = "localhost";
+	public static final String REPOSITORY_PATH = "download/";
+	
 
 }

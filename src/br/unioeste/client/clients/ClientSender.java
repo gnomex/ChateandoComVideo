@@ -1,4 +1,4 @@
-package br.unioeste.client;
+package br.unioeste.client.clients;
 
 import static br.unioeste.global.SocketConstants.*;
 
@@ -7,6 +7,8 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import br.unioeste.common.User;
 
 public class ClientSender implements Runnable{
 
