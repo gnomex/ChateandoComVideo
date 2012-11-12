@@ -1,4 +1,4 @@
-package br.unioeste.server;
+package br.unioeste.server.messages;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

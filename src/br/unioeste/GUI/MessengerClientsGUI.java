@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -36,6 +37,10 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.JMenuBar;
 
 import static br.unioeste.global.SocketConstants.*;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.JRadioButton;
 
 public class MessengerClientsGUI extends JFrame {
 
@@ -53,12 +58,21 @@ public class MessengerClientsGUI extends JFrame {
 
 	private ClientListener clientsListener; //
 	private MessagesListener messageListener;
-	
+
 	private User user;
-	
+
 	private JMenuItem connectMenuItem;
 	private JMenuItem disconetMenuItem;
 	private JMenuItem refreshMenuItem;
+	private JMenuItem ChatMenuItem;
+
+	private JTextArea textAreaChat;
+
+	private JLabel statusBar_2;
+	
+	private  JRadioButton rdbtnChat;
+	private JRadioButton rdbtnApenasUsuario;
+	
 
 	/**
 	 * Launch the application.
@@ -76,7 +90,7 @@ public class MessengerClientsGUI extends JFrame {
 
 					MessengerClientsGUI frame = new MessengerClientsGUI(messageManager , clientsManager);
 					frame.setVisible(true);
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -98,64 +112,49 @@ public class MessengerClientsGUI extends JFrame {
 
 		messageManager = managemessages;
 		clientsManager = clientsmanager;
-		
+
 		clientsListener = new MyClientListener();
 		messageListener = new MyMessageListener();
 
 		setTitle("Clients List");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 594, 735);
+		setBounds(100, 100, 1000, 743);
 
 		JMenu serverMenu = new JMenu ( "Server" );
-		JMenu serverChat = new JMenu ( "Chat" );
 
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		menuBar.add( serverMenu ); // add server menu to menu bar
-		menuBar.add(serverChat);
+
 		setJMenuBar( menuBar ); // add JMenuBar to application
 
 		ConnectListener connectionListener = new ConnectListener();
-		
+
 		connectMenuItem = new JMenuItem( "Connect");
 		connectMenuItem.addActionListener(connectionListener);
+
+		DisconnectListener diconnectListener = new DisconnectListener();
 		
 		disconetMenuItem = new JMenuItem("Disconect");
-		
+		disconetMenuItem.addActionListener(diconnectListener);
+		disconetMenuItem.setEnabled(false);
+
 		refreshMenuItem = new JMenuItem("Refresh");
 		refreshMenuItem.setEnabled(false);
+
 		refreshMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clientsManager.getClientsList(clientsListener);
 			}
 		});
-		
 
-		JMenuItem ChatMenuItem = new JMenuItem("Chat em grupo");
-		ChatMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				//Create a new ManageMessage	
-
-				// create GUI for SocketMessageManager
-				ClientGUI clientGUI = new ClientGUI( messageManager , "all" );
-				clientGUI.setSize(500, 600);
-				clientGUI.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-				clientGUI.setLocationRelativeTo(null);
-				clientGUI.setVisible( true ); // show window
-
-
-			}
-		});
 
 		serverMenu.add(connectMenuItem);
 		serverMenu.add(disconetMenuItem);
 		serverMenu.add(refreshMenuItem);
-		
-		disconetMenuItem.setEnabled(false);
 
-		serverChat.add(ChatMenuItem);
+
 
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
@@ -164,7 +163,7 @@ public class MessengerClientsGUI extends JFrame {
 		contentPane.setLayout(null);
 
 		JPanel panel = new JPanel();
-		panel.setBounds(12, 12, 566, 688);
+		panel.setBounds(12, 12, 566, 593);
 		contentPane.add(panel);
 
 		panel.setLayout(null);
@@ -173,10 +172,58 @@ public class MessengerClientsGUI extends JFrame {
 
 		JList list = new JList(model);
 		list.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		list.setBounds(24, 12, 518, 629);
+		list.setBounds(24, 12, 518, 569);
 		panel.add(list);
 
 		list.setSelectionBackground(Color.ORANGE);
+
+		JScrollPane scrollPane_1 = new JScrollPane(list);
+		scrollPane_1.setBounds(24, 12, 518, 569);
+		panel.add(scrollPane_1);
+
+		JPanel panel_1 = new JPanel();
+		panel_1.setBounds(12, 607, 566, 81);
+		contentPane.add(panel_1);
+		panel_1.setLayout(null);
+
+		JLabel statusBar = new JLabel("Status: ");
+		statusBar.setBounds(12, 54, 66, 15);
+		panel_1.add(statusBar);
+
+		statusBar_2 = new JLabel("Not connected");
+		statusBar_2.setBounds(90, 54, 335, 15);
+		panel_1.add(statusBar_2);
+
+		rdbtnChat = new JRadioButton("Chat");
+		rdbtnChat.setBounds(394, 24, 149, 23);
+		panel_1.add(rdbtnChat);
+
+		rdbtnApenasUsuario = new JRadioButton("Apenas usuario");
+		rdbtnApenasUsuario.setBounds(394, 50, 149, 23);
+		panel_1.add(rdbtnApenasUsuario);
+
+		ButtonGroup grupo = new ButtonGroup();
+		grupo.add(rdbtnChat);
+		grupo.add(rdbtnApenasUsuario);
+		rdbtnApenasUsuario.setSelected(true);
+		
+		JLabel lblOpes = new JLabel("Opções");
+		lblOpes.setBounds(394, 0, 149, 16);
+		panel_1.add(lblOpes);
+
+		JPanel panel_2 = new JPanel();
+		panel_2.setBounds(590, 12, 394, 670);
+		contentPane.add(panel_2);
+		panel_2.setLayout(null);
+
+		textAreaChat = new JTextArea();
+		textAreaChat.setBounds(12, 12, 370, 646);
+		panel_2.add(textAreaChat);
+		textAreaChat.setEditable(false);
+
+		JScrollPane scrollPane = new JScrollPane(textAreaChat);
+		scrollPane.setBounds(12, 12, 370, 646);
+		panel_2.add(scrollPane);
 
 
 		ListDataListener listDataListener = new ListDataListener() {
@@ -265,6 +312,17 @@ public class MessengerClientsGUI extends JFrame {
 
 	}
 
+
+	private class MyMessageListener implements MessagesListener{
+
+		public void messageReceived( String from,String to, String message ) 
+		{
+
+			String nMessage = "\n" + from + " To " + to + " says: " + message;
+			textAreaChat.append(nMessage);
+		}
+	} 
+
 	private class ConnectListener implements ActionListener 
 	{
 		// connect to server and enable/disable GUI components
@@ -274,7 +332,7 @@ public class MessengerClientsGUI extends JFrame {
 			// prompt for userName
 			String userName = JOptionPane.showInputDialog( 
 					MessengerClientsGUI.this, "Enter user name:" );
-			
+
 			user = new User();
 			user.setUserName(userName);;
 			user.setUserTag(userName);
@@ -284,22 +342,34 @@ public class MessengerClientsGUI extends JFrame {
 
 			clientsManager.addClient(user);
 			clientsManager.getClientsList(clientsListener);
-			
+
 			connectMenuItem.setEnabled(false);
 			disconetMenuItem.setEnabled(true);
 			refreshMenuItem.setEnabled(true);
-			
-		} // end method actionPerformed      
-	} // end ConnectListener inner class
-	
-	private class MyMessageListener implements MessagesListener 
-	{
-		public void messageReceived( String from,String to, String message ) 
-		{
+			ChatMenuItem.setEnabled(true);
 
-		} 
+		} // end method actionPerformed      
 	}
-	
+
+	private class DisconnectListener implements ActionListener 
+	{
+		// disconnect from server and enable/disable GUI components
+		public void actionPerformed( ActionEvent event )
+		{
+			// disconnect from server and stop routing messages
+			messageManager.disconnect( messageListener );
+
+			connectMenuItem.setEnabled( true );
+			disconetMenuItem.setEnabled(false);
+			refreshMenuItem.setEnabled(false);
+			ChatMenuItem.setEnabled(false);
+
+			model.clear();
+		}   
+	}
+
+
+
 	private class NovaConversa implements MouseListener{
 
 		@Override
@@ -309,16 +379,21 @@ public class MessengerClientsGUI extends JFrame {
 				int index = theList.locationToIndex(mouseEvent.getPoint());
 				if (index >= 0) {
 					Object o = theList.getModel().getElementAt(index);
-					System.out.println("Solicitando nova conversa com: " + o.toString());
 					try{
 
-						// create GUI for SocketMessageManager
-						ClientGUI clientGUI = new ClientGUI( messageManager , "" );
-						clientGUI.setSize(500, 600);
-						clientGUI.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-						clientGUI.setLocationRelativeTo(null);
-						clientGUI.setVisible( true ); // show window
+						String message = JOptionPane.showInputDialog( 
+								MessengerClientsGUI.this, "Enter message:" );			
 
+						if(message != null){
+							if(rdbtnApenasUsuario.isSelected()){
+								messageManager.sendMessage(user.getUserName(), o.toString(), message);
+							}else{
+								messageManager.sendMessage(user.getUserName(), "all", message);
+							}
+						}
+
+						String nMessage = "\nTo " + o.toString() +": " + message;
+						textAreaChat.append(nMessage);
 
 					}catch (Exception e) {
 						// TODO: handle exception

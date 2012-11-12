@@ -42,8 +42,8 @@ public class ClientListReceiver implements Runnable{
 			ObjectInputStream objectIn = new ObjectInputStream(byteArrayIn);
 			ClientsList cList = (ClientsList) objectIn.readObject();
 
-			System.out.println(" -- Client list received from " + multicastSocket.getInetAddress() +" Port: " + multicastSocket.getLocalPort());
-			System.out.println("Tam do buffer " + receiveData.length);
+			//System.out.println(" -- Client list received from " + multicastSocket.getInetAddress() +" Port: " + multicastSocket.getLocalPort());
+			//System.out.println("Tam do buffer " + receiveData.length);
 			// Close streams
 			objectIn.close();
 			byteArrayIn.close();

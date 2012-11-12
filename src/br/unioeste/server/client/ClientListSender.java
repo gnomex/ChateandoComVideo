@@ -1,4 +1,4 @@
-package br.unioeste.server;
+package br.unioeste.server.client;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
@@ -40,7 +40,7 @@ public class ClientListSender implements Runnable{
 				byte[] clients = byteArrayOut.toByteArray();
 
 				//System.out.println("Sending new clients list");
-			//	System.out.println("Tam do buffer: " + clients.length);
+				//	System.out.println("Tam do buffer: " + clients.length);
 				// Envia o objeto
 				DatagramPacket sendPacket = new DatagramPacket(clients, clients.length,
 						group, MULTICAST_LISTENING_CLIENTS_PORT );

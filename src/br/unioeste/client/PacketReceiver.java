@@ -94,14 +94,12 @@ public class PacketReceiver implements Runnable
 	        	 dataMessage = tokenizer.nextToken();
 	        	 
 	        	 
-	        	 if(userTag.equalsIgnoreCase(touser)){
+	        	 if(userTag.equalsIgnoreCase(touser) || "all".equals(touser)){
 	 	            // send message to MessageListener
 	 	            messageListener.messageReceived( 
 	 	               username, // user name
 	 	               touser, //To user
 	 	               dataMessage ); // message body
-	        	 }else{
-	        		 System.out.println("This message is not for me. " + userTag + " says.");
 	        	 }
 	        	 
 

@@ -1,4 +1,4 @@
-package br.unioeste.server;
+package br.unioeste.server.client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

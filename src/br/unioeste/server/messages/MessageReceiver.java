@@ -1,4 +1,4 @@
-package br.unioeste.server;
+package br.unioeste.server.messages;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -82,6 +82,7 @@ public class MessageReceiver  implements Runnable
 					if ( message.equalsIgnoreCase(
 							MESSAGE_SEPARATOR + DISCONNECT_STRING ) ) 
 						stopListening();
+					
 				} // end else
 			} // end if
 		} // end while  

@@ -10,6 +10,10 @@ import br.unioeste.client.User;
 import br.unioeste.messenger.ClientListener;
 import br.unioeste.messenger.ClientsList;
 import br.unioeste.messenger.MessagesListener;
+import br.unioeste.server.client.ClientListSender;
+import br.unioeste.server.client.ClientReceiver;
+import br.unioeste.server.messages.MessageReceiver;
+import br.unioeste.server.messages.MulticastSender;
 import static br.unioeste.global.SocketConstants.*;
 
 public class ServerMessenger  implements MessagesListener, ClientListener{
