@@ -33,8 +33,7 @@ public class UCHandlerArchiveManager {
 	public void sendFile(String filePath) throws UnknownHostException,
 			IOException {
 		// Cria Socket de comunicação com o modulo Manager
-		Socket socket = new Socket(MANAGER_ADDR,
-				TCP_PORT);
+		Socket socket = new Socket(MANAGER_ADDR, TCP_PORT);
 
 		// Carrega arquivo
 		File file = new File(filePath);

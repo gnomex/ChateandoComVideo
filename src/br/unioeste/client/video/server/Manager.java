@@ -17,9 +17,9 @@ public class Manager {
 		// Inicia serviço RMI
 //		new RemoteService();
 		// Inicia Serviço de envio
-		new ServerSender("sender_server").start();
+		new ServerSender("Deivide", "Kenner", "sender_server").start();
 		// Inicia Serviço de recebimento
-		new ServerReceiver("receiver_server").start();
+		new ServerReceiver("Deivide", "Kenner", "receiver_server").start();
 		// Inicia Serviço de Descobrimento dinamico de modulo Manager
 		new ServerDiscovery("discovery_server").start();
 	}

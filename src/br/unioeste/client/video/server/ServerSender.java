@@ -18,14 +18,18 @@ public class ServerSender extends Thread {
 	private ServerSocket serverSocket;
 	private boolean finish = false;
 	private TCPComunication comunicationTCP;
+	private String username;
+	private String touser;
 
 	/**
 	 * Construtor da classe
 	 * 
 	 * @param threadName
 	 */
-	public ServerSender(String threadName) {
+	public ServerSender(String username, String touser, String threadName) {
 		super(threadName);
+		this.username = username;
+		this.touser = touser;
 	}
 
 	/**
@@ -41,7 +45,7 @@ public class ServerSender extends Thread {
 			while (!finish) {
 				this.clientSocket = this.serverSocket.accept();
 				this.comunicationTCP = new TCPComunication(this.clientSocket);
-				new Thread(new SendVideoHandler(this.comunicationTCP, "Deivide", "Kenner"),
+				new Thread(new SendVideoHandler(this.comunicationTCP, username, touser),
 						"sender").start();
 			}
 

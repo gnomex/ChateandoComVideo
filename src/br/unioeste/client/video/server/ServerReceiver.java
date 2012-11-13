@@ -18,14 +18,18 @@ public class ServerReceiver extends Thread {
 	private ServerSocket serverSocket;
 	private boolean finish = false;
 	private TCPComunication socketCommunication;
+	private String username;
+	private String touser;
 
 	/**
 	 * Construtor da classe
 	 * 
 	 * @param threadName
 	 */
-	public ServerReceiver(String threadName) {
+	public ServerReceiver(String username, String touser, String threadName) {
 		super(threadName);
+		this.username = username;
+		this.touser = touser;
 	}
 
 	/**
@@ -41,7 +45,7 @@ public class ServerReceiver extends Thread {
 			while (!finish) {
 				this.clientSocket = this.serverSocket.accept();
 				this.socketCommunication = new TCPComunication(this.clientSocket);
-				new Thread(new ReceiveVideoHandler(this.socketCommunication, "Deivide", "Kenner"),
+				new Thread(new ReceiveVideoHandler(this.socketCommunication, username, touser),
 						"receive").start();
 			}
 

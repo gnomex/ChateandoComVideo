@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import br.unioeste.client.video.SendVideoHandler;
 import br.unioeste.server.file.transmission.TCPComunication;
 
-public class VideoTeste implements Runnable {
+public class VideoTesteCliente2 implements Runnable {
 
 	@Override
 	public void run() {
@@ -32,7 +32,7 @@ public class VideoTeste implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		new Thread(new VideoTeste()).start();
+		new Thread(new VideoTesteCliente2()).start();
 	}
 
 }

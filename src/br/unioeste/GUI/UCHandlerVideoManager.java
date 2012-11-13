@@ -4,14 +4,16 @@ import static br.unioeste.global.SocketConstants.DISCOVERY_PORT;
 import static br.unioeste.global.SocketConstants.DISCOVERY_REPLY_PORT;
 import static br.unioeste.global.SocketConstants.GROUP;
 import static br.unioeste.global.SocketConstants.MANAGER_ADDR;
+import static br.unioeste.global.SocketConstants.VIDEO_STREAMING_RECEIVE_PORT;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.net.Socket;
 
 import br.unioeste.client.video.ReceiveVideoHandler;
 import br.unioeste.client.video.SendVideoHandler;
 import br.unioeste.common.Solicitation;
+import br.unioeste.server.file.transmission.TCPComunication;
 import br.unioeste.server.file.transmission.UDPComunication;
 
 /**
@@ -19,38 +21,40 @@ import br.unioeste.server.file.transmission.UDPComunication;
  */
 public class UCHandlerVideoManager {
 	
-	private ArrayList<ShowFramesListener> listeners;
-	
-	public void addEventListener(ShowFramesListener l) {
-		if (listeners == null) {
-			listeners = new ArrayList<ShowFramesListener>();
-		}
-		listeners.add(l);
-	}
-	
 	public UCHandlerVideoManager() {
-		
 	}
 
 	/**
 	 * Metodo que efetua o upload do frame para os repositorios Envia frame
 	 * passado como parametro para o modulo de Gerenciamento (Manager)
+	 * @throws IOException 
 	 */
-	public void sendFrames(String username, String touser) {
+	public void sendFrames(String username, String touser) throws IOException {
+		// Cria Socket de comunicação com o modulo Manager
+		Socket socket = new Socket(MANAGER_ADDR, VIDEO_STREAMING_RECEIVE_PORT);
+		// Estabelece o canal TCP
+		TCPComunication com = new TCPComunication(socket);
+		
 		System.out
 		.println("[Modulo Client] - Enviando frame ao modulo de Gerenciamento");
-		SendVideoHandler manager = new SendVideoHandler(username, touser);
+		SendVideoHandler manager = new SendVideoHandler(com, username, touser);
 		new Thread(manager, "frame_sender").start();
 	}
 
 	/**
 	 * Metodo que efetua o download do frame dos os repositorios Solicita
 	 * frame passado como parametro para o modulo de Gerenciamento (Manager)
+	 * @throws IOException 
 	 */
-	public void receiveFrames(String username, String touser) {
+	public void receiveFrames(String username, String touser) throws IOException {
+		// Cria Socket de comunicação com o modulo Manager
+		Socket socket = new Socket(MANAGER_ADDR, VIDEO_STREAMING_RECEIVE_PORT);
+		// Estabelece o canal TCP
+		TCPComunication com = new TCPComunication(socket);
+				
 		System.out
 		.println("[Modulo Client] - Solicitando frame ao modulo de Gerenciamento");
-		ReceiveVideoHandler manager = new ReceiveVideoHandler(username, touser);
+		ReceiveVideoHandler manager = new ReceiveVideoHandler(com, username, touser);
 		new Thread(manager, "frame_receiver").start();
 	}
 
@@ -80,6 +84,11 @@ public class UCHandlerVideoManager {
 	}
 	
 	public static void main(String[] args) {
-		new UCHandlerVideoManager().sendFrames("Deivide", "Kenner");
+		try {
+			new UCHandlerVideoManager().sendFrames("Deivide", "Kenner");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
