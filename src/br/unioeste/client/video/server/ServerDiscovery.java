@@ -1,10 +1,9 @@
-package br.unioeste.server;
+package br.unioeste.client.video.server;
 
 import java.io.IOException;
 
-import br.unioeste.common.handler.DiscoveryHandler;
+import br.unioeste.client.video.DiscoveryHandler;
 import br.unioeste.server.file.transmission.UDPComunication;
-
 import static br.unioeste.global.SocketConstants.*;
 
 public class ServerDiscovery extends Thread {
@@ -33,8 +32,7 @@ public class ServerDiscovery extends Thread {
 
 			try {
 				// Fica ouvindo o grupo
-				object = com.readGroupObject(GROUP,
-						DISCOVERY_PORT);
+				object = com.readGroupObject(GROUP, DISCOVERY_PORT);
 
 				// Cria uma nova thread assim que chega um objeto no grupo
 				new Thread(new DiscoveryHandler(object), "DISCOVERY").start();

@@ -1,4 +1,4 @@
-package br.unioeste.server;
+package br.unioeste.server.file;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +18,7 @@ import br.unioeste.util.TemporaryFile;
 
 import static br.unioeste.global.SocketConstants.*;
 
+
 /**
  * Classe que gerencia os objetos recebidos no servidor do repositorio atraves
  * de uma thread.
@@ -25,16 +26,15 @@ import static br.unioeste.global.SocketConstants.*;
 public class MessageReceivedHandler implements Runnable {
 
 	private Object object;
-	private Listener print;
 
 	/**
 	 * Construtor da classe
 	 * 
 	 * @param object
 	 */
-	public MessageReceivedHandler(Object object, Listener listener) {
+	public MessageReceivedHandler(Object object) {
 		this.object = object;
-		print = listener;
+
 	}
 
 	/**
@@ -49,8 +49,7 @@ public class MessageReceivedHandler implements Runnable {
 		if (className.equals("Package")) {
 			try {
 				Package newPackage = (Package) object;
-				print.appendTxt("\n[Modulo Repository] - Recebido pacote nº: "
-						+ newPackage.getSequenceNumber());
+				
 				this.packageHandler(newPackage);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -81,12 +80,12 @@ public class MessageReceivedHandler implements Runnable {
 
 		// Caso seja uma solicitação de listar arquivos
 		if (code == Solicitation.LIST_FILE) {
-			print.appendTxt("\n[Modulo Repository] - Recebido solicitação do tipo: Listar Arquivos");
+			
 			this.sendListFile(solicitation);
 		} else {
 			// Caso seja uma solicitação de download
 			if (code == Solicitation.DOWNLOAD) {
-				print.appendTxt("\n[Modulo Repository] - Recebido solicitação do tipo: Download");
+				
 				this.sendFile(solicitation);
 			}
 		}
@@ -105,7 +104,7 @@ public class MessageReceivedHandler implements Runnable {
 			try {
 				com = new TCPComunication(sock);
 			} catch (Exception e) {
-				print.appendTxt("\n[Modulo Repository] - Modulo de Gerenciamento já atendido por outro repositorio");
+				
 			}
 
 			// Instancia arquivo do repositorio
@@ -116,7 +115,7 @@ public class MessageReceivedHandler implements Runnable {
 			int packageNumber = 1;
 			byte[] buf = new byte[BUFFER_SIZE];
 
-			print.appendTxt("\n[Modulo Repository] - Enviando arquivo ao modulo de Gerenciamento");
+			
 			do {
 				read = fileIn.read(buf);
 
@@ -133,14 +132,13 @@ public class MessageReceivedHandler implements Runnable {
 					newPackage.setPayLoad(Util.copyBytes(buf, read));
 				}
 
-				print.appendTxt("\n[Modulo Repository] - Nº pacote: "
-						+ newPackage.getSequenceNumber());
+			
 				com.sendObject(newPackage);
 
 			} while (read == BUFFER_SIZE);
-			print.appendTxt("\n[Modulo Repository] - Arquivo enviado ao modulo de Gerenciamento");
-			print.appendTxt("\n");
+		
 
+			fileIn.close();
 			// Fecha canais de comunicação
 			com.close();
 			sock.close();
@@ -148,7 +146,7 @@ public class MessageReceivedHandler implements Runnable {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
-			print.appendTxt("\n[Modulo Repository] - Modulo de Gerenciamento já atendido por outro repositorio");
+			
 		}
 
 	}
@@ -170,8 +168,6 @@ public class MessageReceivedHandler implements Runnable {
 			Archive archive;
 			LinkedList<File> fileList = this.getFileList();
 			if (!fileList.isEmpty()) {
-				print.appendTxt(fileList.toString());
-				print.appendTxt("\n[Modulo Repository] - Enviando lista de arquivos ao modulo de Gerenciamento");
 				
 				Iterator<File> it = fileList.iterator();
 				File f;
@@ -187,25 +183,22 @@ public class MessageReceivedHandler implements Runnable {
 							archive.setNotLast(false);
 						}
 						com.sendObject(archive);
-						print.appendTxt("\n[Modulo Repository] - Nome arquivo: "
-								+ archive.getName());
 					}
 				}
-				print.appendTxt("\n[Modulo Repository] - Lista de arquivos enviado ao modulo de Gerenciamento");
-				print.appendTxt("\n");
+			
 			} else {
 				archive = new Archive();
 				archive.setName(null);
 				archive.setNotLast(false);
 				com.sendObject(archive);
-				print.appendTxt("\n[Modulo Repository] - Lista de arquivos vazia.");
+				
 			}
 
 			// Fecha canais de comunicação
 			com.close();
 			sock.close();
 		} catch (IOException e) {
-			print.appendTxt("\n[Modulo Repository] - Modulo de Gerenciamento já atendido por outro repositorio");
+			
 		}
 	}
 
@@ -237,11 +230,10 @@ public class MessageReceivedHandler implements Runnable {
 
 		// Caso não seja o ultimo pacote
 		if (newPackage.isNotLast()) {
-			Server.tmpFileList.add(newPackage);
+			ServerTransmission.tmpFileList.add(newPackage);
 		} else {
-			int pos = Server.tmpFileList.hasTmpFile(newPackage);
-			print.appendTxt("\n[Modulo Repository] - Arquivo salvo no modulo de Repositorio");
-			print.appendTxt("\n");
+			int pos = ServerTransmission.tmpFileList.hasTmpFile(newPackage);
+		
 
 			// Se arquivos temporarios nao contem o arquivo do pacote, entao
 			// cria arquivo pequeno
@@ -249,7 +241,7 @@ public class MessageReceivedHandler implements Runnable {
 				this.saveFile(newPackage);
 			} else {
 
-				TemporaryFile tmp = Server.tmpFileList.remove(pos);
+				TemporaryFile tmp = ServerTransmission.tmpFileList.remove(pos);
 				tmp.add(newPackage);
 				tmp.sort(); // ordena pacotes conforme o numero de sequencia
 				this.checkBuffer(tmp);

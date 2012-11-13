@@ -22,7 +22,7 @@ public class SocketMessageManager implements ManageMessages{
 	   private PacketReceiver receiver; // receives multicast message
 	   private boolean connected = false; // connection status
 	   private ExecutorService serverExecutor; // executor for server
-	   	   
+	   private User user;	   
 	   
 	   public SocketMessageManager( String address )
 	   {
@@ -34,7 +34,7 @@ public class SocketMessageManager implements ManageMessages{
 	   // connect to server and send messages to given MessageListener
 	   public void connect( MessagesListener listener, User user ) 
 	   {
-		   
+		   this.user = user;
 	      if ( connected )
 	         return; // if already connected, return immediately
 
@@ -64,7 +64,7 @@ public class SocketMessageManager implements ManageMessages{
 	      try // stop listener and disconnect from server
 	      {     
 	         // notify server that client is disconnecting
-	         Runnable disconnecter = new MessageSender( clientSocket, "", "",
+	         Runnable disconnecter = new MessageSender( clientSocket, user.getUserName(), "all",
 	            DISCONNECT_STRING );         
 	         Future disconnecting = serverExecutor.submit( disconnecter );         
 	         disconnecting.get(); // wait for disconnect message to be sent

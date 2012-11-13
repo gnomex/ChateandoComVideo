@@ -14,8 +14,6 @@ import br.unioeste.util.TemporaryFileList;
 import br.unioeste.common.Package;
 
 import static br.unioeste.global.SocketConstants.*;
-
-
 /**
  * Classe que gerencia a thread de Download de um arquivo
  */
@@ -24,7 +22,7 @@ public class DownloadHandler implements Runnable {
 	private TCPComunication comunicationClient;
 	private TCPComunication comunicationRepository;
 	private TemporaryFileList buffer = new TemporaryFileList();
-	
+
 	
 	/**
 	 * Construtor da Classe
@@ -99,7 +97,6 @@ public class DownloadHandler implements Runnable {
 	 * @throws IOException
 	 */
 	private void sendSolicitation(Solicitation sol) throws IOException {
-		System.out.println("[Modulo Manager] - Enviando solicitação de download ao modulo de Repositorio");
 		UDPComunication uDPComunication = new UDPComunication();
 		uDPComunication.sendObject(GROUP, UDP_PORT, sol);
 	}
@@ -115,13 +112,12 @@ public class DownloadHandler implements Runnable {
 		LinkedList<Package> list = tempFile.getPackageList();
 		
 		//Envia pacotes para o modulo do cliente
-		System.out.println("[Modulo Manager] - Enviando arquivo ao modulo do Cliente");
+		
 		for (Package newPackage : list) {
-			System.out.println("[Modulo Manager] - Nº pacote: " + newPackage.getSequenceNumber());
+
 			this.comunicationClient.sendObject(newPackage);
 		}
-		System.out.println("[Modulo Manager] - Arquivo enviado ao modulo do Cliente");
-		System.out.println();
+
 	}
 
 
@@ -133,14 +129,13 @@ public class DownloadHandler implements Runnable {
 		
 		try {
 			//Recebe todos os pacotes do repositorio
-			System.out.println("[Modulo Manager] - Recebendo arquivo do modulo de Repositorio");
+	
 			do {
 				newPackage = (Package) this.comunicationRepository.readObject();
-				System.out.println("[Modulo Manager] - Nº pacote: " + newPackage.getSequenceNumber());
+
 				this.buffer.add(newPackage);
 			} while (newPackage.isNotLast());
-			System.out.println("[Modulo Manager] - Arquivo recebido do modulo de Repositorio");
-			System.out.println();
+			
 			
 		} catch (IOException e) {
 			e.printStackTrace();

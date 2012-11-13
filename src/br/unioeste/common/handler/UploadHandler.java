@@ -10,7 +10,6 @@ import br.unioeste.util.TemporaryFileList;
 import br.unioeste.common.Package;
 
 import static br.unioeste.global.SocketConstants.*;
-
 /**
  * Classe que gerencia a thread de Upload de um arquivo
  */
@@ -18,6 +17,7 @@ public class UploadHandler implements Runnable {
 	
 	private TCPComunication comunicationTCP;
 	private TemporaryFileList buffer = new TemporaryFileList();
+
 	
 	/**
 	 * Construtor da classe
@@ -62,14 +62,12 @@ public class UploadHandler implements Runnable {
 		
 		try {
 			//Recebe todos os pacotes do client
-			System.out.println("[Modulo Manager] - Recebendo arquivo do modulo do Cliente");
+
 			do {
 				newPackage = (Package) this.comunicationTCP.readObject();
-				System.out.println("[Modulo Manager] - Nº pacote: " + newPackage.getSequenceNumber());
 				this.buffer.add(newPackage);
 			} while (newPackage.isNotLast());
-			System.out.println("[Modulo Manager] - Arquivo recebido do modulo do Cliente");
-			System.out.println();
+			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -96,13 +94,9 @@ public class UploadHandler implements Runnable {
 		UDPComunication com = new UDPComunication();
 	
 		//Envia pacotes para o modulo do repositorio
-		System.out.println("[Modulo Manager] - Enviando arquivo ao modulo de Repositorio");
 		for(Package newPackage : list) {
-			System.out.println("[Modulo Manager] - Nº pacote: " + newPackage.getSequenceNumber());
 			com.sendObject(GROUP, UDP_PORT, newPackage);
 			Thread.sleep(DELAY);
 		}
-		System.out.println("[Modulo Manager] - Arquivo enviado ao modulo de Repositorio");
-		System.out.println();
 	}
 }

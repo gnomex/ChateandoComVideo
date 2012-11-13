@@ -13,7 +13,6 @@ import br.unioeste.server.file.transmission.UDPComunication;
 import br.unioeste.util.Archive;
 
 import static br.unioeste.global.SocketConstants.*;
-
 /**
  * Metodo que gerencia as solicitações ao modulo de Gerenciamento
  */

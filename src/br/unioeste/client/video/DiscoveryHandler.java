@@ -1,4 +1,4 @@
-package br.unioeste.common.handler;
+package br.unioeste.client.video;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -45,6 +45,9 @@ public class DiscoveryHandler implements Runnable {
 				e.printStackTrace();
 			}
 
+		} else {
+			if (solicitation.getCode() == Solicitation.DOWNLOAD_FRAME) {
+			}
 		}
 
 	}

@@ -1,18 +1,18 @@
-package br.unioeste.server;
+package br.unioeste.client.video.server;
+
+import static br.unioeste.global.SocketConstants.VIDEO_STREAMING_SEND_PORT;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import br.unioeste.common.handler.DownloadHandler;
+import br.unioeste.client.video.SendVideoHandler;
 import br.unioeste.server.file.transmission.TCPComunication;
-
-import static br.unioeste.global.SocketConstants.*;
 
 /**
  * Classe que implementa o servidor de Download
  */
-public class ServerDownload extends Thread {
+public class ServerSender extends Thread {
 
 	private Socket clientSocket;
 	private ServerSocket serverSocket;
@@ -24,7 +24,7 @@ public class ServerDownload extends Thread {
 	 * 
 	 * @param threadName
 	 */
-	public ServerDownload(String threadName) {
+	public ServerSender(String threadName) {
 		super(threadName);
 	}
 
@@ -35,14 +35,14 @@ public class ServerDownload extends Thread {
 	public void run() {
 		try {
 			// Cria canal de comunicação
-			this.serverSocket = new ServerSocket(DOWNLOAD_PORT);
+			this.serverSocket = new ServerSocket(VIDEO_STREAMING_SEND_PORT);
 
 			// Aguarda nova conexão
 			while (!finish) {
 				this.clientSocket = this.serverSocket.accept();
 				this.comunicationTCP = new TCPComunication(this.clientSocket);
-				new Thread(new DownloadHandler(this.comunicationTCP),
-						"download").start();
+				new Thread(new SendVideoHandler(this.comunicationTCP, "Deivide", "Kenner"),
+						"sender").start();
 			}
 
 			// Fecha canal de comunicação

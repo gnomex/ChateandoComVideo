@@ -48,7 +48,7 @@ public class ClientListSender implements Runnable{
 
 				// Close stream
 				socket.close();
-				Thread.sleep(5000);
+				Thread.sleep(1000);
 				
 			}catch (Exception e) {
 				// TODO: handle exception

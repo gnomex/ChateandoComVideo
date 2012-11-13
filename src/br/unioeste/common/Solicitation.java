@@ -11,11 +11,14 @@ public class Solicitation implements Serializable {
 
 	public static int LIST_FILE = 1;
 	public static int DOWNLOAD = 2;
+	public static int DOWNLOAD_FRAME = 3;
 
 	public static int DISCOVER = 93;
 	public static int DISCOVER_REPLY = 94;
 
 	private String archiveName;
+	private String username;
+	private String touser;
 	private int code;
 	private String address;
 	private int port;
@@ -92,5 +95,21 @@ public class Solicitation implements Serializable {
 	 */
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getTouser() {
+		return touser;
+	}
+
+	public void setTouser(String touser) {
+		this.touser = touser;
 	}
 }

@@ -1,18 +1,18 @@
-package br.unioeste.server;
+package br.unioeste.client.video.server;
+
+import static br.unioeste.global.SocketConstants.VIDEO_STREAMING_RECEIVE_PORT;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import br.unioeste.common.handler.UploadHandler;
+import br.unioeste.client.video.ReceiveVideoHandler;
 import br.unioeste.server.file.transmission.TCPComunication;
-
-import static br.unioeste.global.SocketConstants.*;
 
 /**
  * Classe que implementa o servidor de Upload
  */
-public class ServerUpload extends Thread {
+public class ServerReceiver extends Thread {
 
 	private Socket clientSocket;
 	private ServerSocket serverSocket;
@@ -24,7 +24,7 @@ public class ServerUpload extends Thread {
 	 * 
 	 * @param threadName
 	 */
-	public ServerUpload(String threadName) {
+	public ServerReceiver(String threadName) {
 		super(threadName);
 	}
 
@@ -35,15 +35,14 @@ public class ServerUpload extends Thread {
 	public void run() {
 		try {
 			// Cria canal de comunicação
-			this.serverSocket = new ServerSocket(TCP_PORT);
+			this.serverSocket = new ServerSocket(VIDEO_STREAMING_RECEIVE_PORT);
 
 			// Aguarda nova conexão
 			while (!finish) {
 				this.clientSocket = this.serverSocket.accept();
-				this.socketCommunication = new TCPComunication(
-						this.clientSocket);
-				new Thread(new UploadHandler(this.socketCommunication),
-						"upload").start();
+				this.socketCommunication = new TCPComunication(this.clientSocket);
+				new Thread(new ReceiveVideoHandler(this.socketCommunication, "Deivide", "Kenner"),
+						"receive").start();
 			}
 
 			// Fecha canal de comunicação

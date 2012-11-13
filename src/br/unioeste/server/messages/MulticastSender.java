@@ -5,15 +5,30 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import br.unioeste.server.ServicesListener;
+import br.unioeste.util.PacketCounter;
+
 import static br.unioeste.global.SocketConstants.*;
 
 public class MulticastSender implements Runnable
 {   
 	private byte[] messageBytes; // message data
+	
+	private ServicesListener listener;
+	
+	private int counter ;
 
-	public MulticastSender( byte[] bytes ) 
+	public MulticastSender( byte[] bytes , ServicesListener serviceListener) 
 	{ 
 		messageBytes = bytes; // create the message
+		listener = serviceListener;
+		
+		try{
+			counter = PacketCounter.getQuantityPacksNecessary(messageBytes.length);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 	} // end MulticastSender constructor
 
 	// deliver message to MULTICAST_ADDRESS over DatagramSocket
@@ -34,10 +49,14 @@ public class MulticastSender implements Runnable
 
 			socket.send( packet ); // send packet to multicast group
 			socket.close(); // close socket
+			listener.sentData( messageBytes.length);
+			listener.packetsSender(counter);
+			
 		} // end try
 		catch ( IOException ioException ) 
 		{ 
 			ioException.printStackTrace();
+			listener.packetLost(counter);
 		} // end catch
 	} // end method run
 }

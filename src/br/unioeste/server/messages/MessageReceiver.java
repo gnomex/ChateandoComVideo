@@ -8,6 +8,8 @@ import java.net.SocketTimeoutException;
 import java.util.StringTokenizer;
 
 import br.unioeste.messenger.MessagesListener;
+import br.unioeste.server.ServicesListener;
+import br.unioeste.util.PacketCounter;
 import static br.unioeste.global.SocketConstants.*;
 
 public class MessageReceiver  implements Runnable
@@ -15,12 +17,15 @@ public class MessageReceiver  implements Runnable
 	private BufferedReader input; // input stream
 	private MessagesListener messageListener; // message listener
 	private boolean keepListening = true; // when false, ends runnable
+	
+	private ServicesListener listener;
 
 	// MessageReceiver constructor
-	public MessageReceiver( MessagesListener listener, Socket clientSocket ) 
+	public MessageReceiver( MessagesListener messagelistener, Socket clientSocket , ServicesListener serviceListener) 
 	{
 		// set listener to which new messages should be sent
-		messageListener = listener;
+		this.messageListener = messagelistener;
+		this.listener = serviceListener;
 
 		try 
 		{
@@ -48,9 +53,15 @@ public class MessageReceiver  implements Runnable
 			try 
 			{            
 				message = input.readLine(); // read message from client
+				
+				byte[] size = message.getBytes();
+				
+				listener.receiveData(size.length);
+				listener.packetsReceived(PacketCounter.getQuantityPacksNecessary(size.length));
 			} // end try
 			catch ( SocketTimeoutException socketTimeoutException ) 
 			{
+				listener.packetLost(-1);
 				continue; // continue to next iteration to keep listening
 			} // end catch
 			catch ( IOException ioException ) 
